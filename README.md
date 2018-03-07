@@ -1,2 +1,2 @@
 # Summer
-简版spring boot,学习spring
+简版spring boot
