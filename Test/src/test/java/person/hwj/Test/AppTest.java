@@ -1,4 +1,4 @@
-package person.summer2;
+package person.hwj.Test;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
