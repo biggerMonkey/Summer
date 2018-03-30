@@ -1,4 +1,4 @@
-package person.summer.context;
+package person.summer.beans;
 
 /**
  * @author huangwenjun

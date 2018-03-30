@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import person.summer.beans.annotation.Autowired;
+import person.summer.context.support.DefaultApplicationContext;
 
 import com.alibaba.fastjson.JSON;
 
@@ -22,9 +23,15 @@ import com.alibaba.fastjson.JSON;
 public class MyDemo {
 
     public static void main(String[] args) throws Exception {
+        DefaultApplicationContext applicationContext = new DefaultApplicationContext();
+        applicationContext.initApplicationContext(MyTest.class.getPackage().getName());
+        MyTest myTest = applicationContext.getBean(MyTest.class);
+        myTest.say();
+    }
+
+    public static void test() throws Exception {
         String className = MyDemo.class.getName();
         System.out.println(className);
-        String packageName = className.substring(0, className.lastIndexOf("."));
         System.out.println(MyDemo.class.getPackage().getName());
         // 使用类加载器加载类
         Class<?> c = Class.forName("person.hwj.Test.annoation.MyTest");

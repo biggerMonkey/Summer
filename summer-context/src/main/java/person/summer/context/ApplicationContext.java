@@ -6,4 +6,5 @@ package person.summer.context;
  */
 public interface ApplicationContext {
 
+    public void initApplicationContext(String... basePackages);
 }
