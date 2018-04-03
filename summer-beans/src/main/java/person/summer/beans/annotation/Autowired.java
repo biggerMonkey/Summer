@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 public @interface Autowired {
     boolean require() default true;
 
-    String info() default "";
+    String name() default "";
 }

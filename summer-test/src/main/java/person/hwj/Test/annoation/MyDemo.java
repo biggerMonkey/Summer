@@ -11,6 +11,8 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import person.hwj.Test.annoation.controller.TestController;
+import person.hwj.Test.annoation.controller.TestController2;
 import person.summer.beans.annotation.Autowired;
 import person.summer.context.support.DefaultApplicationContext;
 
@@ -24,9 +26,25 @@ public class MyDemo {
 
     public static void main(String[] args) throws Exception {
         DefaultApplicationContext applicationContext = new DefaultApplicationContext();
-        applicationContext.initApplicationContext(MyTest.class.getPackage().getName());
-        MyTest myTest = applicationContext.getBean(MyTest.class);
-        myTest.say();
+        applicationContext.initApplicationContext(SingleTest.class.getPackage().getName());
+        TestController testController = applicationContext.getBean(TestController.class);
+        System.out.println(testController);
+        testController.myTest();
+
+        TestController2 testController2 = applicationContext.getBean(TestController2.class);
+        System.out.println(testController2);
+        testController2.myTest();
+
+        NotSingleTest notSingleTest = applicationContext.getBean(NotSingleTest.class);
+        System.out.println(notSingleTest);
+
+        Class<?> class1 = Class.forName("person.hwj.Test.annoation.service.impl.TestServiceImpl");
+        System.out.println(class1.getName());
+        Class<?> class2 = Class.forName("person.hwj.Test.annoation.service.TestService");
+        Class<?>[] classes = class1.getInterfaces();
+        for (Class<?> temp : classes) {
+            System.out.println(temp.getTypeName().equals(class2.getTypeName()));
+        }
     }
 
     public static void test() throws Exception {
@@ -52,7 +70,7 @@ public class MyDemo {
             boolean isExist1 = m.isAnnotationPresent(Autowired.class);
             if (isExist1) {
                 Autowired d1 = m.getAnnotation(Autowired.class);
-                System.out.println(d1.info());
+                System.out.println(d1.name());
             }
         }
         Field[] fields = c.getDeclaredFields();
@@ -67,13 +85,13 @@ public class MyDemo {
                     System.out.println("oooo:" + myAnnoation.info());
                 } else if (annotation instanceof Autowired) {
                     Autowired autowired = (Autowired) annotation;
-                    System.out.println("oooo:" + autowired.info());
+                    System.out.println("oooo:" + autowired.name());
                 }
             }
             boolean isExist1 = field.isAnnotationPresent(Autowired.class);
             if (isExist1) {
                 Autowired d1 = field.getAnnotation(Autowired.class);
-                System.out.println(d1.info());
+                System.out.println(d1.name());
             }
         }
         getClasses();

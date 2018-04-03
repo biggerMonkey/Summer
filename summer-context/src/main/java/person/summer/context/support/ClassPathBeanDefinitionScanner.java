@@ -2,17 +2,11 @@ package person.summer.context.support;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import person.summer.beans.BeanFactory;
-import person.summer.beans.annotation.Compant;
-import person.summer.beans.annotation.ScopeEnum;
-import person.summer.beans.support.DefaultListableBeanFactory;
 
 /**
  * @author huangwenjun
@@ -20,8 +14,9 @@ import person.summer.beans.support.DefaultListableBeanFactory;
  */
 public class ClassPathBeanDefinitionScanner {
 
-    public BeanFactory scan(String... basePackages) throws Exception {
-        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+    public Set<Class<?>> scan(String... basePackages) throws Exception {
+        // DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        Set<Class<?>> classes = new LinkedHashSet<>();
         for (String packageName : basePackages) {
             Enumeration<URL> dirs = ClassLoader.getSystemResources(packageName.replace(".", "/"));
             while (dirs.hasMoreElements()) {
@@ -30,26 +25,12 @@ public class ClassPathBeanDefinitionScanner {
                 // 获取包的物理路径
                 String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
                 // 第一个class类的集合
-                Set<Class<?>> classes = new LinkedHashSet<>();
                 // 是否循环迭代
                 boolean recursive = true;
                 findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
-                for (Class<?> tempClass : classes) {
-                    Annotation[] annotations = tempClass.getAnnotations();
-                    for (Annotation annotation : annotations) {
-                        if (annotation instanceof Compant) {// 需要实例化的
-                            Compant compant = (Compant) annotation;
-                            if (compant.type().equals(ScopeEnum.SINGLETON)) {// 单例，需要实例化
-                                beanFactory.addSingletonBean(tempClass, tempClass.newInstance());
-                            } else {
-                                beanFactory.addNotSingletonBean(tempClass);
-                            }
-                        }
-                    }
-                }
             }
         }
-        return beanFactory;
+        return classes;
     }
 
     private void findAndAddClassesInPackageByFile(String packageName, String packagePath,

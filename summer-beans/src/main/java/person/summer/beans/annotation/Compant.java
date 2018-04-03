@@ -15,7 +15,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Compant {
 
-    String value() default "";
+    String name() default "";
 
     ScopeEnum type() default ScopeEnum.SINGLETON;
+
+    boolean lazy() default false;
 }
