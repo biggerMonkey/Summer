@@ -23,7 +23,7 @@ public class DefaultListableBeanFactory implements BeanFactory {
     private final Map<Class<?>, Object> singletonBeans = new ConcurrentHashMap<Class<?>, Object>();
 
     // 非单例
-    private final Set<Class<?>> notSingletonBeans = new LinkedHashSet<>();
+    private final Set<Class<?>> prototypeBeans = new LinkedHashSet<>();
 
     private final Map<String, Class<?>> nameBeans = new ConcurrentHashMap<String, Class<?>>();
 
@@ -34,7 +34,7 @@ public class DefaultListableBeanFactory implements BeanFactory {
     }
 
     public void addNotSingletonBean(Class<?> notSingletonClass) {
-        notSingletonBeans.add(notSingletonClass);
+        prototypeBeans.add(notSingletonClass);
     }
 
     public void addNameBeans(String beanName, Class<?> beanClass) {
@@ -49,8 +49,8 @@ public class DefaultListableBeanFactory implements BeanFactory {
     public <T> T getBean(Class<T> requiredType) throws Exception {
         T t = (T) singletonBeans.get(requiredType);
         if (t == null) {
-            if (notSingletonBeans.contains(requiredType)) {// 是否包含改bean
-
+            if (prototypeBeans.contains(requiredType)) {// 是否包含改bean
+                return autowireBean(requiredType, requiredType.newInstance());
             } else {
                 return null;
             }
@@ -125,14 +125,22 @@ public class DefaultListableBeanFactory implements BeanFactory {
                 }
             }
         }
+        for (Class<?> tempClass : prototypeBeans) {
+            Class<?>[] classes = tempClass.getInterfaces();
+            for (Class<?> temp : classes) {
+                if (temp.getTypeName().equals(interfaceClass.getTypeName())) {
+                    T t = (T) tempClass.newInstance();
+                    return t;
+                }
+            }
+        }
         return null;
     }
 
     private <T> T autowireByName(String name) throws Exception {
-        System.out.println(name);
         for (String beanName : nameBeans.keySet()) {
             if (beanName.equals(name)) {
-                return (T) nameBeans.get(beanName).newInstance();
+                return (T) nameBeans.get(name).newInstance();
             }
         }
         return null;

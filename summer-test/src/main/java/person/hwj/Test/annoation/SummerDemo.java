@@ -22,7 +22,7 @@ import com.alibaba.fastjson.JSON;
  * @author huangwenjun
  * @Date 2018年3月22日
  */
-public class MyDemo {
+public class SummerDemo {
 
     public static void main(String[] args) throws Exception {
         DefaultApplicationContext applicationContext = new DefaultApplicationContext();
@@ -35,8 +35,14 @@ public class MyDemo {
         System.out.println(testController2);
         testController2.myTest();
 
+        System.out.println("========================================");
         NotSingleTest notSingleTest = applicationContext.getBean(NotSingleTest.class);
+        notSingleTest.say();
         System.out.println(notSingleTest);
+        NotSingleTest notSingleTest2 = applicationContext.getBean(NotSingleTest.class);
+        notSingleTest2.say();
+        System.out.println(notSingleTest2);
+        System.out.println("========================================");
 
         Class<?> class1 = Class.forName("person.hwj.Test.annoation.service.impl.TestServiceImpl");
         System.out.println(class1.getName());
@@ -48,9 +54,9 @@ public class MyDemo {
     }
 
     public static void test() throws Exception {
-        String className = MyDemo.class.getName();
+        String className = SummerDemo.class.getName();
         System.out.println(className);
-        System.out.println(MyDemo.class.getPackage().getName());
+        System.out.println(SummerDemo.class.getPackage().getName());
         // 使用类加载器加载类
         Class<?> c = Class.forName("person.hwj.Test.annoation.MyTest");
 

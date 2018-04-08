@@ -95,7 +95,7 @@
     <logger name="org.apache.zookeeper" level="INFO" additivity="true">
     </logger>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

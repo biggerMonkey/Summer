@@ -7,5 +7,5 @@ package person.summer.beans.annotation;
  */
 public enum ScopeEnum {
 
-    SINGLETON, NOTSINGLETON;
+    SINGLETON, PROTOTYPE;
 }

@@ -19,6 +19,6 @@ public class TestController {
             System.out.println("testService 注入失败！");
             return;
         }
-        testService.test();
+        testService.test("TestController1");
     }
 }

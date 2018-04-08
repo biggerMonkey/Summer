@@ -1,5 +1,7 @@
 package person.hwj.Test.annoation;
 
+import person.hwj.Test.annoation.service.TestService;
+import person.summer.beans.annotation.Autowired;
 import person.summer.beans.annotation.Compant;
 import person.summer.beans.annotation.ScopeEnum;
 
@@ -7,11 +9,11 @@ import person.summer.beans.annotation.ScopeEnum;
  * @author huangwenjun
  * @Date 2018年3月22日
  */
-@Compant(type = ScopeEnum.NOTSINGLETON)
+@Compant(type = ScopeEnum.PROTOTYPE)
 public class NotSingleTest implements Parent {
 
-    @MyAnnoation(info = "I am field info")
-    private String info;
+    @Autowired
+    private TestService testService;
 
     @MyAnnoation(info = "I am method info")
     public void add() {
@@ -20,6 +22,7 @@ public class NotSingleTest implements Parent {
 
     @Override
     public void say() {
-        System.out.println("MyTest say!!!!!!!");
+        testService.test("NotSingleTest");
+        System.out.println("MyTest say!!!!!!!" + testService);
     }
 }
