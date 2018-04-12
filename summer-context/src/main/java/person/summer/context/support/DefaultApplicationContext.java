@@ -26,6 +26,8 @@ public class DefaultApplicationContext implements ApplicationContext {
 
     public void initApplicationContext(String... basePackages) {
         try {
+            // 准备environment
+
             // 扫描所有class
             Set<Class<?>> classes = scanner.scan(basePackages);
             // 初始化bean
