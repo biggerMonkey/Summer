@@ -1,17 +1,17 @@
-package person.summer.beans.support;
+package person.summer.context.support;
+
+import person.summer.beans.BeanFactory;
+import person.summer.beans.annotation.*;
+import person.summer.core.env.ControllerClass;
+import person.summer.core.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import person.summer.beans.BeanFactory;
-import person.summer.beans.annotation.Autowired;
-import person.summer.beans.annotation.Compant;
-import person.summer.beans.annotation.ScopeEnum;
-import person.summer.core.util.StringUtils;
 
 /**
  * @author huangwenjun
@@ -27,6 +27,7 @@ public class DefaultListableBeanFactory implements BeanFactory {
 
     private final Map<String, Class<?>> nameBeans = new ConcurrentHashMap<String, Class<?>>();
 
+    private final Map<String, ControllerClass> controllerClassMap = new ConcurrentHashMap<>();
     // 自动注入
 
     public void addSingletonBean(Class<?> singletonClass, Object object) {
@@ -58,6 +59,10 @@ public class DefaultListableBeanFactory implements BeanFactory {
         return t;
     }
 
+    public ControllerClass getControlleClass(String uri) {
+        return controllerClassMap.get(uri);
+    }
+
     public void initBean(Set<Class<?>> classes) throws Exception {
         for (Class<?> tempClass : classes) {
             Annotation[] annotations = tempClass.getAnnotations();
@@ -75,6 +80,44 @@ public class DefaultListableBeanFactory implements BeanFactory {
                         addNotSingletonBean(tempClass);
                     }
                 }
+                // 判断是否为Controller
+                if (annotation instanceof RestController) {
+                    RestController compant = (RestController) annotation;
+                    if (!StringUtils.isEmpty(compant.name())) {
+                        addNameBeans(compant.name(), tempClass);
+                    } else {
+                        addNameBeans(tempClass.getName(), tempClass);
+                    }
+                    if (compant.type().equals(ScopeEnum.SINGLETON)) {// 单例
+                        addSingletonBean(tempClass, tempClass.newInstance());
+                    } else {
+                        addNotSingletonBean(tempClass);
+                    }
+                    Annotation mappingAnnotaion = tempClass.getAnnotation(RequestMapping.class);
+                    if (mappingAnnotaion == null) {
+                        throw new IllegalArgumentException("Bean init Exception,@RestController class must be have @RequestMapping");
+                    }
+                    String basePath = ((RequestMapping) mappingAnnotaion).path();
+                    for (Method method : tempClass.getDeclaredMethods()) {
+                        Annotation methodMappingAnnotaion = method.getAnnotation(RequestMapping.class);
+                        if (methodMappingAnnotaion == null) {
+                            // throw new IllegalArgumentException("Bean init Exception,@RestController class must be have
+                            // @RequestMapping");
+                            break;
+                        }
+                        String methodPath = ((RequestMapping) methodMappingAnnotaion).path();
+                        MethodEnum methodEnum = ((RequestMapping) methodMappingAnnotaion).method();
+                        ControllerClass tempController = new ControllerClass();
+                        String url = basePath + "/" + methodPath;
+                        url = url.replace("//", "/");
+                        System.out.println("mapping:" + url);
+                        tempController.setUrl(url);
+                        tempController.setMethodEnum(methodEnum);
+                        tempController.setClassInfo(tempClass);
+                        tempController.setMethod(method);
+                        controllerClassMap.put(url, tempController);
+                    }
+                }
             }
         }
     }
@@ -89,8 +132,9 @@ public class DefaultListableBeanFactory implements BeanFactory {
         Field[] fields = tempClass.getDeclaredFields();
         for (Field field : fields) {
             Autowired[] autowireds = field.getAnnotationsByType(Autowired.class);
-            if (autowireds.length == 0) {
-                return (T) tempClass.newInstance();
+            if (autowireds == null || autowireds.length == 0) {
+                // return (T) tempClass.newInstance();
+                return t;
             } else {
                 T isInterface = null;
                 if (StringUtils.isEmpty(autowireds[0].name())) {
@@ -102,14 +146,17 @@ public class DefaultListableBeanFactory implements BeanFactory {
                 } else {
                     isInterface = autowireByName(autowireds[0].name());
                 }
+                if (isInterface == null) {
+                    new Exception("method not autowired" + tempClass.getName() + " " + field.getName() + " not found").printStackTrace();
+                    continue;
+                }
                 T fieldT = (T) autowireBean(isInterface.getClass(), isInterface);
                 field.setAccessible(true);
                 field.set(t, fieldT);
-                return t;
-
             }
         }
-        return (T) tempClass.newInstance();
+        return t;
+        // return (T) tempClass.newInstance();
     }
 
     private <T> T autowireByType(Class<?> interfaceClass) throws Exception {

@@ -67,17 +67,7 @@
 		</dependency>
 		<dependency>
 			<groupId>person</groupId>
-			<artifactId>summer-beans</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>person</groupId>
 			<artifactId>summer-context</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>person</groupId>
-			<artifactId>summer-tomcat</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

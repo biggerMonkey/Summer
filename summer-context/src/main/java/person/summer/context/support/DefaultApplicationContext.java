@@ -1,9 +1,10 @@
 package person.summer.context.support;
 
-import java.util.Set;
-
-import person.summer.beans.support.DefaultListableBeanFactory;
 import person.summer.context.ApplicationContext;
+import person.summer.context.embed.tomcat.TomcatMain;
+import person.summer.core.env.ControllerClass;
+
+import java.util.Set;
 
 /**
  * @author huangwenjun
@@ -41,7 +42,16 @@ public class DefaultApplicationContext implements ApplicationContext {
         }
     }
 
+    public void run() throws Exception{
+        TomcatMain.init(this);
+    }
+
+    @Override
     public <T> T getBean(Class<T> requiredType) throws Exception {
         return (T) beanFactory.getBean(requiredType);
+    }
+    @Override
+    public ControllerClass getControlleClass(String uri) {
+        return beanFactory.getControlleClass(uri);
     }
 }

@@ -1,22 +1,23 @@
 package person.hwj.Test.annoation;
 
+import com.alibaba.fastjson.JSON;
+import person.hwj.Test.annoation.controller.TestController;
+import person.hwj.Test.annoation.controller.TestController2;
+import person.hwj.Test.annoation.controller.UserController;
+import person.summer.beans.annotation.Autowired;
+import person.summer.context.support.DefaultApplicationContext;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import person.hwj.Test.annoation.controller.TestController;
-import person.hwj.Test.annoation.controller.TestController2;
-import person.summer.beans.annotation.Autowired;
-import person.summer.context.support.DefaultApplicationContext;
-
-import com.alibaba.fastjson.JSON;
 
 /**
  * @author huangwenjun
@@ -25,6 +26,29 @@ import com.alibaba.fastjson.JSON;
 public class SummerDemo {
 
     public static void main(String[] args) throws Exception {
+        for(Method method:UserController.class.getDeclaredMethods()){
+            System.out.println(method.getName());
+            for(Parameter parameter:method.getParameters()){
+                System.out.println(parameter.getName());
+                for(Annotation annotation:parameter.getAnnotations()){
+                    System.out.println(annotation.annotationType().getSimpleName());
+
+                }
+            }
+            for(Annotation[] annotations: method.getParameterAnnotations()){
+                System.out.println(annotations.length);
+                for(Annotation annotation:annotations){
+                    System.out.println(annotation.annotationType().getSimpleName());
+                }
+            }
+        }
+
+//        DefaultApplicationContext applicationContext = new DefaultApplicationContext();
+//        applicationContext.initApplicationContext(SingleTest.class.getPackage().getName());
+//        applicationContext.run();
+    }
+
+    public static void test2()throws Exception{
         DefaultApplicationContext applicationContext = new DefaultApplicationContext();
         applicationContext.initApplicationContext(SingleTest.class.getPackage().getName());
         TestController testController = applicationContext.getBean(TestController.class);
